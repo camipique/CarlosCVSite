@@ -1,0 +1,321 @@
+---
+import '@fontsource/newsreader/latin-400.css';
+import '@fontsource/newsreader/latin-ext-400.css';
+import '@fontsource/newsreader/latin-400-italic.css';
+import '@fontsource/newsreader/latin-ext-400-italic.css';
+import '@fontsource/newsreader/latin-500.css';
+import '@fontsource/newsreader/latin-ext-500.css';
+import '@fontsource/source-sans-3/latin-400.css';
+import '@fontsource/source-sans-3/latin-ext-400.css';
+import '@fontsource/source-sans-3/latin-600.css';
+import '@fontsource/source-sans-3/latin-ext-600.css';
+import '../styles/global.css';
+import { cv, formatSpan, locales, type Locale } from '../content/cv';
+import { sectionIds, ui } from '../i18n/ui';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = ui[locale];
+
+function home(code: Locale): string {
+	const path = getRelativeLocaleUrl(code, '/');
+	return path || '/';
+}
+
+function absolute(path: string): string {
+	return Astro.site ? new URL(path, Astro.site).href : path;
+}
+
+const canonical = absolute(home(locale));
+const title = `${cv.name} — ${t.titleSuffix}`;
+const ogLocale = locale === 'en' ? 'en_US' : 'pt_PT';
+const ogLocaleAlternate = locale === 'en' ? 'pt_PT' : 'en_US';
+
+const person: Record<string, unknown> = {
+	'@context': 'https://schema.org',
+	'@type': 'Person',
+	name: cv.name,
+	jobTitle: cv.experience[0]?.title[locale] ?? cv.role[locale],
+	url: canonical,
+};
+
+if (!cv.draft) {
+	person.email = cv.email;
+	person.sameAs = cv.links.map((link) => link.href).filter((href) => href.startsWith('http'));
+	const employer = cv.experience[0]?.company;
+	if (employer) {
+		person.worksFor = { '@type': 'Organization', name: employer };
+	}
+}
+
+const personJson = JSON.stringify(person).replaceAll('<', '\\u003c');
+---
+
+<!doctype html>
+<html lang={locale} data-theme="warm">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+		<meta name="description" content={cv.description[locale]} />
+		{cv.draft && <meta name="robots" content="noindex" />}
+		<meta name="theme-color" content="#faf6f0" />
+		<script is:inline>
+			(function () {
+				var theme = 'warm';
+				try {
+					var saved = localStorage.getItem('cv-theme');
+					if (saved === 'slate' || saved === 'dark' || saved === 'warm') theme = saved;
+				} catch (error) {
+					theme = 'warm';
+				}
+				document.documentElement.setAttribute('data-theme', theme);
+				var colors = { slate: '#f8fafc', dark: '#0d0e11', warm: '#faf6f0' };
+				var meta = document.querySelector('meta[name="theme-color"]');
+				if (meta) meta.setAttribute('content', colors[theme]);
+			})();
+		</script>
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="canonical" href={canonical} />
+		{
+			locales.map((code) => (
+				<link rel="alternate" hreflang={code} href={absolute(home(code))} />
+			))
+		}
+		<link rel="alternate" hreflang="x-default" href={absolute(home('en'))} />
+		<meta property="og:type" content="profile" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={cv.description[locale]} />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:locale" content={ogLocale} />
+		<meta property="og:locale:alternate" content={ogLocaleAlternate} />
+		<script type="application/ld+json" set:html={personJson} />
+	</head>
+	<body>
+		<a class="skip" href="#content">{t.skip}</a>
+		<header class="top">
+			<div class="top-inner">
+				<div class="top-row">
+					<a class="brand" href={home(locale)}>{cv.name}</a>
+					<div class="switches">
+						<nav class="themes" aria-label={t.themeLabel}>
+							<button type="button" data-theme-choice="slate" aria-pressed="false" aria-label={t.themeSlate}>
+								{t.themeSlateShort}
+							</button>
+							<span aria-hidden="true">|</span>
+							<button type="button" data-theme-choice="dark" aria-pressed="false" aria-label={t.themeDark}>
+								{t.themeDarkShort}
+							</button>
+							<span aria-hidden="true">|</span>
+							<button type="button" data-theme-choice="warm" aria-pressed="true" aria-label={t.themeWarm}>
+								{t.themeWarmShort}
+							</button>
+						</nav>
+					<nav class="lang" aria-label={t.langLabel}>
+						<a
+							href={home('en')}
+							hreflang="en"
+							lang="en"
+							aria-label={t.english}
+							data-locale-switch
+							aria-current={locale === 'en' ? 'page' : undefined}
+						>
+							EN
+						</a>
+						<span aria-hidden="true">|</span>
+						<a
+							href={home('pt')}
+							hreflang="pt"
+							lang="pt"
+							aria-label={t.portuguese}
+							data-locale-switch
+							aria-current={locale === 'pt' ? 'page' : undefined}
+						>
+							PT
+						</a>
+					</nav>
+					</div>
+				</div>
+				<nav class="nav" aria-label={t.navLabel}>
+					{sectionIds.map((id) => <a href={`#${id}`}>{t.nav[id]}</a>)}
+				</nav>
+			</div>
+		</header>
+		<main id="content">
+			<header class="intro">
+				{cv.draft && <p class="draft">{t.draft}</p>}
+				<h1>{cv.name}</h1>
+				<p class="role-line">{cv.role[locale]}</p>
+				<p class="place">{cv.location[locale]}</p>
+				<div class="summary">
+					{cv.summary[locale].map((paragraph) => <p>{paragraph}</p>)}
+				</div>
+				<ul class="links">
+					{
+						cv.links.map((link) => (
+							<li>
+								<a
+									href={link.href}
+									{...(link.href.startsWith('http')
+										? { target: '_blank', rel: 'noopener noreferrer' }
+										: {})}
+								>
+									{link.label}
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</header>
+
+			<section id="work" class="section" aria-labelledby="work-heading">
+				<h2 id="work-heading">{t.nav.work}</h2>
+				<ol class="work-list">
+					{
+						cv.work.map((item) => (
+							<li class="work-item">
+								<h3>
+									{item.url ? (
+										<a href={item.url} target="_blank" rel="noopener noreferrer">
+											{item.title[locale]}
+										</a>
+									) : (
+										item.title[locale]
+									)}
+								</h3>
+								<p class="outcome">{item.outcome[locale]}</p>
+								<p class="stack">{item.stack}</p>
+							</li>
+						))
+					}
+				</ol>
+			</section>
+
+			<section id="experience" class="section" aria-labelledby="experience-heading">
+				<h2 id="experience-heading">{t.nav.experience}</h2>
+				<div>
+					{
+						cv.experience.map((role) => (
+							<article class="role">
+								<p class="when">{formatSpan(role.start[locale], role.end, t.present)}</p>
+								<div>
+									<h3>{role.title[locale]}</h3>
+									<p class="meta">
+										{role.company}
+										<span aria-hidden="true"> · </span>
+										{role.place[locale]}
+									</p>
+									<ul>
+										{role.bullets[locale].map((bullet) => (
+											<li>{bullet}</li>
+										))}
+									</ul>
+								</div>
+							</article>
+						))
+					}
+				</div>
+			</section>
+
+			<section id="skills" class="section" aria-labelledby="skills-heading">
+				<h2 id="skills-heading">{t.nav.skills}</h2>
+				<div>
+					{
+						cv.skills.map((group) => (
+							<div class="skill">
+								<h3>{group.label[locale]}</h3>
+								<p>{group.items[locale]}</p>
+							</div>
+						))
+					}
+				</div>
+			</section>
+
+			<section id="education" class="section" aria-labelledby="education-heading">
+				<h2 id="education-heading">{t.nav.education}</h2>
+				<div>
+					{
+						cv.education.map((item) => (
+							<article class="edu">
+								<h3>{item.credential[locale]}</h3>
+								<p class="meta">
+									{item.school}
+									<span aria-hidden="true"> · </span>
+									{item.year}
+								</p>
+							</article>
+						))
+					}
+				</div>
+			</section>
+
+			<section id="contact" class="section" aria-labelledby="contact-heading">
+				<h2 id="contact-heading">{t.nav.contact}</h2>
+				<p class="contact-lead">{t.contactLead}</p>
+				<p>
+					<a class="email" href={`mailto:${cv.email}`}>{cv.email}</a>
+				</p>
+				<ul class="links">
+					{
+						cv.links
+							.filter((link) => link.href.startsWith('http'))
+							.map((link) => (
+								<li>
+									<a href={link.href} target="_blank" rel="noopener noreferrer">
+										{link.label}
+									</a>
+								</li>
+							))
+					}
+				</ul>
+			</section>
+		</main>
+		<script>
+			for (const link of document.querySelectorAll<HTMLAnchorElement>('a[data-locale-switch]')) {
+				link.addEventListener('click', (event) => {
+					const hash = window.location.hash;
+					if (!hash || hash === '#content') return;
+					event.preventDefault();
+					const next = new URL(link.href, window.location.href);
+					next.hash = hash;
+					window.location.assign(next.href);
+				});
+			}
+
+			const themeColors: Record<string, string> = {
+				slate: '#f8fafc',
+				dark: '#0d0e11',
+				warm: '#faf6f0',
+			};
+
+			function applyTheme(theme: string) {
+				document.documentElement.dataset.theme = theme;
+				try {
+					localStorage.setItem('cv-theme', theme);
+				} catch {
+					/* Storage can be blocked. The choice still applies for this view. */
+				}
+				document
+					.querySelector('meta[name="theme-color"]')
+					?.setAttribute('content', themeColors[theme] ?? themeColors.warm);
+				for (const button of document.querySelectorAll<HTMLButtonElement>('[data-theme-choice]')) {
+					button.setAttribute('aria-pressed', button.dataset.themeChoice === theme ? 'true' : 'false');
+				}
+			}
+
+			applyTheme(document.documentElement.dataset.theme ?? 'warm');
+
+			for (const button of document.querySelectorAll<HTMLButtonElement>('[data-theme-choice]')) {
+				button.addEventListener('click', () => {
+					const theme = button.dataset.themeChoice;
+					if (theme) applyTheme(theme);
+				});
+			}
+		</script>
+	</body>
+</html>

@@ -20,9 +20,15 @@ export type Role = {
 	bullets: Record<Locale, readonly string[]>;
 };
 
+export type Skill = {
+	name: string;
+	// First month of regular use, as 'YYYY-MM'. Years are counted from it.
+	since?: string;
+};
+
 export type SkillGroup = {
 	label: Copy;
-	items: Copy;
+	items: readonly Skill[];
 };
 
 export type EducationItem = {
@@ -55,23 +61,23 @@ export const cv = {
 		pt: 'Montijo, Lisboa, Portugal',
 	},
 	role: {
-		en: 'Full-stack developer for HR and recruitment products.',
-		pt: 'Programador full-stack para produtos de recursos humanos e recrutamento.',
+		en: 'Full-stack developer focused on backend systems in TypeScript.',
+		pt: 'Programador full-stack focado em sistemas de backend em TypeScript.',
 	},
 	description: {
-		en: 'Full-stack developer at Betacode, building and migrating HR and recruitment software since 2022.',
-		pt: 'Programador full-stack na Betacode, a construir e migrar software de recursos humanos e recrutamento desde 2022.',
+		en: 'Full-stack developer at Betacode and main backend contributor to a 140+ module NestJS platform serving 1.4k+ active people.',
+		pt: 'Programador full-stack na Betacode e principal contribuidor do backend de uma plataforma NestJS com mais de 140 módulos, ao serviço de mais de 1400 pessoas ativas.',
 	},
 	summary: {
 		en: [
-			'I build and migrate the software an HR and recruitment client runs day to day.',
-			'Most of that work is Evolve, a NestJS and Gatsby platform replacing a CakePHP system I still maintain.',
-			'I also shipped the public website, the AWS and observability setup around the product, and customer webhooks on Vectorhire.',
+			'I’m a full-stack developer at Betacode. Since 2022 I’ve worked on a client’s core business platform.',
+			'I’m the main contributor to its NestJS backend: 140+ modules serving more than 1,400 active people, replacing a legacy CakePHP system while it stays live.',
+			'I also built the client’s public website, which has 18,500 registered users since launch.',
 		],
 		pt: [
-			'Construo e migro o software que um cliente de recursos humanos e recrutamento usa no dia a dia.',
-			'A maior parte desse trabalho é a Evolve, uma plataforma em NestJS e Gatsby que substitui um sistema em CakePHP que ainda mantenho.',
-			'Também fiz o site público, a configuração AWS e de observabilidade à volta do produto, e webhooks para clientes na Vectorhire.',
+			'Sou programador full-stack na Betacode. Desde 2022 trabalho na plataforma de negócio principal de um cliente.',
+			'Sou o principal contribuidor do backend em NestJS: mais de 140 módulos ao serviço de mais de 1400 pessoas ativas, a substituir um sistema legado em CakePHP que continua em produção.',
+			'Também construí o site público do cliente, que já tem 18 500 utilizadores registados desde o lançamento.',
 		],
 	},
 	links: [
@@ -81,26 +87,26 @@ export const cv = {
 	],
 	work: [
 		{
-			title: { en: 'Evolve', pt: 'Evolve' },
+			title: { en: 'Workforce management platform', pt: 'Plataforma de gestão de pessoas' },
 			outcome: {
-				en: 'Moved the HR product from CakePHP to NestJS and Gatsby, and kept the legacy app in service during the move.',
-				pt: 'Passei o produto de recursos humanos de CakePHP para NestJS e Gatsby, e mantive a aplicação legada em serviço durante a mudança.',
+				en: 'Wrote about 60% of a new 140+ module backend that handles hiring, contracts and payroll for 1.4k+ active workers, replacing a CakePHP system that stays live during the move.',
+				pt: 'Escrevi cerca de 60% de um novo backend com mais de 140 módulos que trata do recrutamento, dos contratos e dos salários de mais de 1400 trabalhadores ativos, a substituir um sistema em CakePHP que continua em produção durante a migração.',
 			},
-			stack: 'NestJS, Gatsby, CakePHP',
+			stack: 'NestJS, Gatsby, MySQL, MongoDB, Redis',
 		},
 		{
-			title: { en: 'Public recruitment website', pt: 'Site público de recrutamento' },
+			title: { en: 'Public careers website', pt: 'Site público de carreiras' },
 			outcome: {
-				en: 'Built the client’s public site, backend and frontend.',
-				pt: 'Construí o site público do cliente, backend e frontend.',
+				en: 'Built most of the backend and frontend of the client’s careers site, which has 18.5k registered candidates since launch.',
+				pt: 'Construí a maior parte do backend e do frontend do site de carreiras do cliente, que já tem 18,5 mil candidatos registados desde o lançamento.',
 			},
 			stack: 'NestJS, Next.js',
 		},
 		{
-			title: { en: 'Vectorhire webhooks', pt: 'Webhooks da Vectorhire' },
+			title: { en: 'Digital contract signing', pt: 'Assinatura digital de contratos' },
 			outcome: {
-				en: 'Backend webhooks in production, already used by customers.',
-				pt: 'Webhooks de backend em produção, já usados por clientes.',
+				en: 'Built the online contract-signing flow, integrated with an external digital-signature provider.',
+				pt: 'Construí o fluxo de assinatura de contratos online, integrado com um fornecedor externo de assinatura digital.',
 			},
 			stack: 'NestJS',
 		},
@@ -117,38 +123,62 @@ export const cv = {
 			end: null,
 			bullets: {
 				en: [
-					'Migrated Evolve off CakePHP onto NestJS and Gatsby, and still maintain the legacy app while features move across. The new platform covers the product the client uses daily, including contracts, payslips, communications, and digital signatures.',
-					'Built the public recruitment website end to end, with NestJS on the backend and Next.js on the frontend.',
-					'Run the platform around the product: DNS and access on AWS, container images on ECR, Elasticsearch and Kibana for KPIs, and a Grafana and Loki log stack. The product is integrated with SendGrid, Twilio, digital signature, Bizneo, Hirint, and other external APIs.',
-					'On Vectorhire, a second recruitment product, I focused on the backend, including webhooks that customers already use.',
+					'Main contributor to a client’s workforce management platform: a NestJS backend of 140+ modules that runs hiring, contracts and payroll for 1.4k+ active workers, with 1.4k+ payslips a month.',
+					'Replacing the client’s CakePHP system module by module, and keeping the legacy app in service so the business always has a working system.',
+					'Built digital contract signing and contract management, and co-built a two-way sync with an external recruiting platform using Redis queues and background workers.',
+					'Integrated the platform with job boards including LinkedIn, plus SendGrid, Twilio, other third-party APIs and an external ERP database.',
+					'Built most of the client’s public careers website (NestJS and Next.js), which has 18.5k registered candidates since launch.',
+					'Run the infrastructure: AWS (DNS, access, ECR), Docker, Grafana and Loki for logs, and Elasticsearch and Kibana for business KPIs.',
+					'On a second product, built the webhooks customers use to receive events in their own systems.',
 				],
 				pt: [
-					'Migrei a Evolve de CakePHP para NestJS e Gatsby, e continuo a manter a aplicação legada enquanto as funcionalidades passam. A nova plataforma cobre o produto que o cliente usa todos os dias, incluindo contratos, recibos de vencimento, comunicações e assinatura digital.',
-					'Construí o site público de recrutamento de ponta a ponta, com NestJS no backend e Next.js no frontend.',
-					'Trato da plataforma à volta do produto: DNS e acessos na AWS, imagens de contentores no ECR, Elasticsearch e Kibana para KPIs, e logs com Grafana e Loki. O produto integra SendGrid, Twilio, assinatura digital, Bizneo, Hirint e outras APIs externas.',
-					'Na Vectorhire, um segundo produto de recrutamento, concentrei-me no backend, incluindo webhooks que os clientes já usam.',
+					'Principal contribuidor da plataforma de gestão de pessoas de um cliente: um backend em NestJS com mais de 140 módulos que gere o recrutamento, os contratos e os salários de mais de 1400 trabalhadores ativos, com mais de 1400 recibos por mês.',
+					'Substituo o sistema em CakePHP do cliente módulo a módulo e mantenho a aplicação legada em serviço, para que o negócio tenha sempre um sistema a funcionar.',
+					'Construí a assinatura digital e a gestão de contratos, e desenvolvi em conjunto uma sincronização bidirecional com uma plataforma de recrutamento externa, com filas Redis e workers em segundo plano.',
+					'Integrei a plataforma com portais de emprego, incluindo o LinkedIn, e com a SendGrid, a Twilio, outras APIs externas e uma base de dados de ERP externa.',
+					'Construí a maior parte do site público de carreiras do cliente (NestJS e Next.js), que já tem 18,5 mil candidatos registados desde o lançamento.',
+					'Trato da infraestrutura: AWS (DNS, acessos, ECR), Docker, Grafana e Loki para logs, e Elasticsearch e Kibana para KPIs de negócio.',
+					'Noutro produto, construí os webhooks que os clientes usam para receber eventos nos seus próprios sistemas.',
 				],
 			},
 		},
 	],
 	skills: [
 		{
-			label: { en: 'Languages', pt: 'Linguagens' },
-			items: { en: 'TypeScript', pt: 'TypeScript' },
+			label: { en: 'Daily', pt: 'Uso diário' },
+			items: [
+				{ name: 'TypeScript', since: '2023-10' },
+				{ name: 'NestJS', since: '2023-10' },
+				{ name: 'React', since: '2023-10' },
+				{ name: 'Next.js', since: '2024-05' },
+				{ name: 'Gatsby' },
+				{ name: 'Node.js' },
+				{ name: 'MySQL' },
+				{ name: 'MongoDB' },
+				{ name: 'Redis' },
+				{ name: 'Tailwind CSS' },
+			],
 		},
 		{
-			label: { en: 'Platforms', pt: 'Plataformas' },
-			items: {
-				en: 'NestJS, Next.js, Gatsby, CakePHP',
-				pt: 'NestJS, Next.js, Gatsby, CakePHP',
-			},
+			label: { en: 'Production experience', pt: 'Experiência em produção' },
+			items: [
+				{ name: 'PHP / CakePHP', since: '2022-09' },
+				{ name: 'Docker' },
+				{ name: 'AWS' },
+				{ name: 'TypeORM' },
+				{ name: 'Mongoose' },
+				{ name: 'Bull' },
+				{ name: 'Jest' },
+				{ name: 'Nx' },
+				{ name: 'Bitbucket Pipelines' },
+				{ name: 'REST / OpenAPI' },
+				{ name: 'Elasticsearch / Kibana' },
+				{ name: 'Grafana / Loki' },
+			],
 		},
 		{
-			label: { en: 'Infrastructure', pt: 'Infraestrutura' },
-			items: {
-				en: 'AWS, Docker, Elasticsearch, Grafana, Loki',
-				pt: 'AWS, Docker, Elasticsearch, Grafana, Loki',
-			},
+			label: { en: 'Familiar', pt: 'Conhecimentos' },
+			items: [{ name: 'Storybook' }],
 		},
 	],
 	education: [

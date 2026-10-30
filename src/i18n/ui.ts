@@ -16,6 +16,7 @@ type Ui = {
 	themeDarkShort: string;
 	themeWarmShort: string;
 	present: string;
+	years: (count: number) => string;
 	draft: string;
 	contactLead: string;
 	titleSuffix: string;
@@ -37,6 +38,7 @@ export const ui: Record<Locale, Ui> = {
 		themeDarkShort: 'Dark',
 		themeWarmShort: 'Warm',
 		present: 'Present',
+		years: (count) => `${count} ${count === 1 ? 'yr' : 'yrs'}`,
 		draft: 'Draft copy. The facts below are placeholders until real roles and projects replace them.',
 		contactLead: 'Email is the direct way to reach me.',
 		titleSuffix: 'CV',
@@ -62,6 +64,7 @@ export const ui: Record<Locale, Ui> = {
 		themeDarkShort: 'Escuro',
 		themeWarmShort: 'Quente',
 		present: 'Atual',
+		years: (count) => `${count} ${count === 1 ? 'ano' : 'anos'}`,
 		draft:
 			'Texto em rascunho. Os factos abaixo são marcadores até serem substituídos por funções e projetos reais.',
 		contactLead: 'O email é a forma direta de contacto.',

@@ -328,7 +328,8 @@ section[id] {
 .stack,
 .meta,
 .when,
-.place {
+.place,
+.years {
 	color: var(--muted);
 }
 
@@ -360,6 +361,27 @@ section[id] {
 	font-family: var(--sans);
 	font-size: 1rem;
 	font-weight: 600;
+}
+
+.skill-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.15rem 0;
+	margin: 0.4rem 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.skill-list li:not(:last-child)::after {
+	content: '·';
+	margin: 0 0.5rem;
+	color: var(--muted);
+}
+
+.years {
+	margin-left: 0.35rem;
+	font-size: 0.85em;
+	font-variant-numeric: tabular-nums;
 }
 
 .email {

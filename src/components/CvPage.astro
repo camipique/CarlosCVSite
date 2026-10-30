@@ -11,6 +11,7 @@ import '@fontsource/source-sans-3/latin-600.css';
 import '@fontsource/source-sans-3/latin-ext-600.css';
 import '../styles/global.css';
 import { cv, formatSpan, locales, type Locale } from '../content/cv';
+import { yearsSince } from '../content/years';
 import { sectionIds, ui } from '../i18n/ui';
 import { getRelativeLocaleUrl } from 'astro:i18n';
 
@@ -229,7 +230,18 @@ const personJson = JSON.stringify(person).replaceAll('<', '\\u003c');
 						cv.skills.map((group) => (
 							<div class="skill">
 								<h3>{group.label[locale]}</h3>
-								<p>{group.items[locale]}</p>
+								<ul class="skill-list">
+									{group.items.map((skill) => (
+										<li>
+											{skill.name}
+											{skill.since && (
+												<span class="years" data-since={skill.since}>
+													{t.years(yearsSince(skill.since))}
+												</span>
+											)}
+										</li>
+									))}
+								</ul>
 							</div>
 						))
 					}
@@ -276,6 +288,16 @@ const personJson = JSON.stringify(person).replaceAll('<', '\\u003c');
 			</section>
 		</main>
 		<script>
+			import { yearsSince } from '../content/years';
+			import { ui } from '../i18n/ui';
+
+			// The build bakes in the years as of deploy. Recount them on view so they never go stale.
+			const yearsLabel = (document.documentElement.lang === 'pt' ? ui.pt : ui.en).years;
+			for (const span of document.querySelectorAll<HTMLElement>('[data-since]')) {
+				const since = span.dataset.since;
+				if (since) span.textContent = yearsLabel(yearsSince(since));
+			}
+
 			for (const link of document.querySelectorAll<HTMLAnchorElement>('a[data-locale-switch]')) {
 				link.addEventListener('click', (event) => {
 					const hash = window.location.hash;
